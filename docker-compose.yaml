@@ -4,3 +4,10 @@ services:
     build: auth/.
     ports:
       - "3000:3000"
+    depends_on:
+      - auth-database
+  auth-database:
+    image: postgres
+    hostname: auth-postgres-srv
+    environment:
+      - POSTGRES_PASSWORD=postgres
