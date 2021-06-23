@@ -4,6 +4,8 @@ services:
     build: auth/.
     ports:
       - "3000:3000"
+    environment:
+      - JWT_KEY=${JWT_KEY}
     depends_on:
       - auth-database
   auth-database:

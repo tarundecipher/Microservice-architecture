@@ -1,21 +1,17 @@
 import express,{Request,response,Response} from 'express';
-import {body,validationResult} from 'express-validator'
-import { RequestValidationError } from '../Errors/request-validation-error';
+import {body} from 'express-validator'
 import { EmailInUseError } from '../Errors/email-inuse-error';
 const router = express.Router();
 import { Password } from "../services/password";
 import {User} from '../database/db';
 import jwt from 'jsonwebtoken';
+import {ValidateRequest} from '../middlewares/validate-request'; 
 
 
 router.post('/api/users/signup',[
     body('email').isEmail().withMessage('Email must be valid'),
     body('password').trim().isLength({min:4,max:20}).withMessage('Password must be between 4 and 20 characters')
-],async (req:Request,res:Response)=>{
-    const errors = validationResult(req);
-    if(!errors.isEmpty()){
-        throw new RequestValidationError(errors.array());
-    }
+],ValidateRequest,async (req:Request,res:Response)=>{
     const {email,password} = req.body;
     await findUser(email,true);
     const hashed = await Password.toHash(password);
@@ -25,11 +21,11 @@ router.post('/api/users/signup',[
     const userJwt = jwt.sign({
         id: user.id,
         email: user.email
-    },'asdf');
+    },process.env.JWT_KEY!);
     req.session = {
         jwt: userJwt
     };
-    res.status(201).send({});
+    res.status(201).send(user);
 });
 
 const findUser = async (email:string,throwError:Boolean) =>{

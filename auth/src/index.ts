@@ -41,7 +41,10 @@ app.listen(3000,()=>{
 })
 
 sequelize.sync().then((res:Response)=>{
-    console.log(res);
+
+    if(!process.env.JWT_KEY){
+        throw new Error('JWT_KEY not defined');
+    }
 }).catch((err:Error)=>{
     console.log(err);
 })
