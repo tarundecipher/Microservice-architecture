@@ -2,8 +2,7 @@ version: "3"
 services:
   auth:
     build: auth/.
-    ports:
-      - "3000:3000"
+    hostname: auth
     environment:
       - JWT_KEY=${JWT_KEY}
     depends_on:
@@ -13,3 +12,7 @@ services:
     hostname: auth-postgres-srv
     environment:
       - POSTGRES_PASSWORD=postgres
+  client:
+    build: client/.
+    ports:
+      - "3000:3000"
